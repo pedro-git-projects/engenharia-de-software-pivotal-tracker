@@ -1,10 +1,28 @@
 use yew::prelude::*;
 
+#[derive(Clone, PartialEq)]
 pub struct CatPicture {
     pub id: String,
     pub url: String,
     pub width: usize,
     pub height: usize,
+}
+
+#[derive(Properties, PartialEq)]
+struct CatPictureListProps {
+    pictures: Vec<CatPicture>,
+}
+
+#[function_component(CatPictureList)]
+fn cat_picture_list(CatPictureListProps { pictures }: &CatPictureListProps) -> Html {
+    pictures
+        .iter()
+        .map(|picture| {
+            html! {
+                <img src= {format!("{}", picture.url)}/>
+            }
+        })
+        .collect()
 }
 
 #[function_component(App)]
@@ -30,21 +48,12 @@ fn app() -> Html {
         },
     ];
 
-    let pictures = pictures
-        .iter()
-        .map(|picture| {
-            html! {
-                <img src= {format!("{}", picture.url)}/>
-            }
-        })
-        .collect::<Html>();
-
     html! {
         <>
             <h1>{ "Trabalho Pivotal Tracker + API" }</h1>
             <div>
             <h3>{ "Recarregue para ver uma nova imagem:" }</h3>
-            {pictures}
+            <CatPictureList pictures={pictures}/>
             </div>
             </>
     }
