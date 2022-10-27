@@ -21,7 +21,7 @@ fn cat_picture_list(CatPictureListProps { pictures }: &CatPictureListProps) -> H
         .iter()
         .map(|picture| {
             html! {
-                <img src= {format!("{}", picture.url)}/>
+                <img src= {format!("{}", picture.url)} class="img-fluid rounded shadow-sm"/>
             }
         })
         .collect()
@@ -54,12 +54,20 @@ fn app() -> Html {
 
     html! {
         <>
-            <h1>{ "Trabalho Pivotal Tracker + API" }</h1>
-            <div>
-            <h3>{ "Recarregue para ver uma nova imagem:" }</h3>
-            <CatPictureList pictures={(*pictures).clone()}/>
+            <div class="wrapper d-flex flex-column min-vh-100 px-5 bg-dark">
+            <div class="text-center mt-3">
+                <h1 class="font-weight-bold text-white">{ "Trabalho Pivotal Tracker && Cat API" }</h1>
             </div>
-            </>
+            <div>
+            <div class="text-center mt-3">
+                <h3 class="text-light">{ "Recarregue para ver uma nova imagem:" }</h3>
+            </div>
+            <div class="text-center mt-3">
+                <CatPictureList pictures={(*pictures).clone()}/>
+            </div>
+            </div>
+            </div>
+        </>
     }
 }
 
