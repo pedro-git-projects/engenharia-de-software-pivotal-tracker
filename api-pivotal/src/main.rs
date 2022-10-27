@@ -1,6 +1,8 @@
+use gloo_net::http::Request;
+use serde::Deserialize;
 use yew::prelude::*;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Deserialize)]
 pub struct CatPicture {
     pub id: String,
     pub url: String,
@@ -27,33 +29,35 @@ fn cat_picture_list(CatPictureListProps { pictures }: &CatPictureListProps) -> H
 
 #[function_component(App)]
 fn app() -> Html {
-    let pictures = vec![
-        CatPicture {
-            id: "8ji".to_string(),
-            url: "https://cdn2.thecatapi.com/images/8ji.jpg".to_string(),
-            width: 500,
-            height: 334,
-        },
-        CatPicture {
-            id: "OeOUzmQIk".to_string(),
-            url: "https://cdn2.thecatapi.com/images/OeOUzmQIk.jpg".to_string(),
-            width: 1080,
-            height: 1080,
-        },
-        CatPicture {
-            id: "22d".to_string(),
-            url: "https://cdn2.thecatapi.com/images/22d.jpg".to_string(),
-            width: 500,
-            height: 313,
-        },
-    ];
+    let pictures = use_state(|| vec![]);
+    {
+        let pictures = pictures.clone();
+        use_effect_with_deps(
+            move |_| {
+                let pictures = pictures.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    let fetched_pictures: Vec<CatPicture> =
+                        Request::get("https://api.thecatapi.com/v1/images/search")
+                            .send()
+                            .await
+                            .unwrap()
+                            .json()
+                            .await
+                            .unwrap();
+                    pictures.set(fetched_pictures);
+                });
+                || ()
+            },
+            (),
+        );
+    }
 
     html! {
         <>
             <h1>{ "Trabalho Pivotal Tracker + API" }</h1>
             <div>
             <h3>{ "Recarregue para ver uma nova imagem:" }</h3>
-            <CatPictureList pictures={pictures}/>
+            <CatPictureList pictures={(*pictures).clone()}/>
             </div>
             </>
     }
